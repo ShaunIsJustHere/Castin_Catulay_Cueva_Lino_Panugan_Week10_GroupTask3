@@ -1,15 +1,18 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 
-import { NavigationIndependentTree } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 
-const Stack = createStackNavigator();
+// ─── Profile Screen ───────────────────────────────────────────────────────────
+export default function ProfileScreen() {
 
 const [edit, setEdit] = useState('');
-const [savedChange, setSavedChange] = useState<any>(null);
+
+type Profile = {
+  note: string;
+  time: string;
+};
+const [savedChange, setSavedChange] = useState<Profile | null>(null);
 
 useEffect(() => {
   loadProfile();
@@ -43,13 +46,10 @@ async function loadProfile() {
   }
 }
 
-// ─── Profile Screen ───────────────────────────────────────────────────────────
-function ProfileScreen({ navigation }: any) {
-
   return (
     <View style={styles.container}>
       <Text style={styles.avatar}>👤</Text>
-      <Text style={styles.name}>{savedChange.edit}</Text>
+      <Text style={styles.name}>{savedChange?.note || "User #6200907"}</Text>
       <Text style={styles.email}>kapine@gmail.com</Text>
 
       <View style={styles.card}>
@@ -62,62 +62,24 @@ function ProfileScreen({ navigation }: any) {
         <Text style={styles.value}>12</Text>
       </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Edit')}
-      >
-        <Text style={styles.buttonText}>Edit Profile</Text>
-      </TouchableOpacity>
+      <View style={{flex: 1, alignItems: 'center', padding: 20}}>
+        <Text style={styles.title}>✍️ Edit Profile ✍️</Text>
+      
+        <TextInput
+          style={styles.input}
+          placeholder="Edit your profile name here..."
+          value={edit}
+          onChangeText={setEdit}
+        />
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={saveChange}
+        >
+          <Text style={styles.buttonText}>Save Changes</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  );
-}
-
-function EditScreen({ navigation }: any) {
-  return (
-    
-    <View style={{flex: 1, justifyContent: 'center', padding: 20}}>
-      <Text style={styles.title}>✍️ Edit Profile</Text>
-
-      <Text style={{ fontSize: 12, color: '#999'}}>{savedChange.edit}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Edit your profile name here..."
-        value={edit}
-        onChangeText={setEdit}
-      />
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={saveChange}
-      >
-        <Text style={styles.buttonText}>Save Changes</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Profile')}
-      >
-        <Text style={styles.buttonText}>Return to Profile</Text>
-      </TouchableOpacity>
-
-    </View>
-  )
-}
-
-export default function App() {
-  return (
-    <NavigationIndependentTree>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: { backgroundColor: '#3E1F00' },
-          headerTintColor: '#F5E6D3',
-          headerTitleStyle: { fontWeight: 'bold' },
-        }}
-      >
-        <Stack.Screen name="Profile"         component={ProfileScreen}         options={{ title: '👤 Personal Profile' }} />
-        <Stack.Screen name="Edit" component={EditScreen} options={{ title: 'Profile Details', headerLeft: () => null }} />
-      </Stack.Navigator>
-    </NavigationIndependentTree>
   );
 }
 
@@ -180,9 +142,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
   },
   input: {
+    width: 325,
     height: 45,
     borderWidth: 1,
     borderColor: '#999',
