@@ -1,9 +1,11 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { NavigationIndependentTree } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import React, { useState, useEffect } from 'react';
+
 // ─── Coffee Menu Data ────────────────────────────────────────────────────────
-const menuItems = [
+const initialMenu = [
   {id: '1', category: 'Coffee', name: 'Mocha', price: 'Php 100.00', desc: 'Espresso with steamed milk and sweet chocolate.'},
   {id: '2', category: 'Coffee', name: 'Cappuccino', price: 'Php 100.00', desc: 'Equal parts espresso, steamed milk and thick layer of foam.'},
   {id: '3', category: 'Coffee', name: 'Affogato', price: 'Php 110.00', desc: 'Espresso with vanilla ice cream.'},
@@ -19,9 +21,48 @@ const Stack = createStackNavigator();
 
 // ─── Home Screen (Coffee Menu) ───────────────────────────────────────────────
 function HomeScreen({ navigation }: any) {
+
+  const [menuItems, setMenuItems] = useState(initialMenu);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadMenu();
+  }, []);
+
+  async function loadMenu() {
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://api.sampleapis.com/coffee/hot');
+      const data = await response.json();
+
+      const apiMenu = data.map((item: any) => ({
+        id: String(5 + item.id),
+        category: 'Coffee',
+        name: item.title,
+        price: 'Php ' + (120 + item.id * 5) + '.00',
+        desc: item.description,
+      }));
+      
+      // Append API items to existing items
+      setMenuItems(prev => [...prev, ...apiMenu]);
+    } catch (error) {
+      console.log('Error loading menu:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+  
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>☕ Kapine - Menu</Text>
+
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3E1F00" />
+          <Text style={{ marginTop: 15 }}>Loading menu...</Text>
+        </View>
+      )}
 
       {/* FlatList renders the menuItems array as a scrollable list */}
       <FlatList
@@ -179,5 +220,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FDF6EE',
+  }
 });
