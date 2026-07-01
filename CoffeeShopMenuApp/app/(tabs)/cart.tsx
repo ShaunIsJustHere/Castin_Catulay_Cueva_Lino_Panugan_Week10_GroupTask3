@@ -12,24 +12,8 @@ const Stack = createStackNavigator();
 
 // ─── Cart Screen ─────────────────────────────────────────────────────────────
 function CartScreen({ navigation }: any) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🛒 Cart Screen</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('OrderSummary')}
-      >
-        <Text style={styles.buttonText}>View Order Summary</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-// ─── Order Summary Screen ─────────────────────────────────────────────────────
-function OrderSummaryScreen({ navigation }: any) {
-  // ─── Stated Variables [7/1/2026] ─────────────────────────────────────────────────────
-  
+  // ─── Stated Variables [7/1/2026] ───────────────────────────────────────────────────── 
   const [note, setNote] = useState('');
   const [savedOrder, setSavedOrder] = useState<any>(null);
 
@@ -70,12 +54,13 @@ function OrderSummaryScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📋 Order Summary</Text>
+      <Text style={styles.title}>🛒 Cart Screen</Text>
 
       {/* ─── Input Field ─── */}
+      <Text style={{ fontSize: 12, color: '#999'}}>SPECIAL INSTRUCTIONS:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your order note"
+        placeholder="Enter your note here..."
         value={note}
         onChangeText={setNote}
       />
@@ -90,15 +75,30 @@ function OrderSummaryScreen({ navigation }: any) {
 
       {/* ─── Data Display ─── */}
       {savedOrder && (
-        <View style={{ marginTop: 30, alignItems: 'center' }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Saved Order</Text>
+        <View style={styles.detailContainer}>
+          <Text style={{ fontSize: 12, color: '#999'}}>LAST SAVED NOTE:</Text>
 
-          <Text>Note: {savedOrder.note}</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16, color: '#1A4D2E' }}>{savedOrder.note}</Text>
 
-          <Text>Saved At: {savedOrder.time}</Text>
+          <Text style={{ fontSize: 10, color: '#999', fontStyle: 'italic' }}>Saved at {savedOrder.time}</Text>
         </View>
       )}
 
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('OrderSummary')}
+      >
+        <Text style={styles.buttonText}>View Order Summary</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ─── Order Summary Screen ─────────────────────────────────────────────────────
+function OrderSummaryScreen({ navigation }: any) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>📋 Order Summary</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.goBack()}
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#fff',
+    padding: 20
   },
   title: {
     fontSize: 24,
@@ -151,15 +151,28 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    textAlign: 'center'
   },
-
+  // ─── New Styles ───
   input: {
-    width: '80%',
     height: 45,
     borderWidth: 1,
     borderColor: '#999',
     borderRadius: 8,
     paddingHorizontal: 10,
+    marginTop: 10,
     marginBottom: 20,
+  },
+  detailContainer: {
+    backgroundColor: '#F0FFF4',
+    borderRadius: 12,
+    padding: 16,
+    margin: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#1A4D2E',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2
   }
 });
