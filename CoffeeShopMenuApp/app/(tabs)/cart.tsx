@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { NavigationIndependentTree } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from 'react';
 
 // ─── Stack Navigator Setup ───────────────────────────────────────────────────
 // This is a SECOND independent stack — separate from the one in index.tsx.
@@ -27,9 +28,76 @@ function CartScreen({ navigation }: any) {
 
 // ─── Order Summary Screen ─────────────────────────────────────────────────────
 function OrderSummaryScreen({ navigation }: any) {
+  // ─── Stated Variables [7/1/2026] ─────────────────────────────────────────────────────
+  
+  const [note, setNote] = useState('');
+  const [savedOrder, setSavedOrder] = useState<any>(null);
+
+  useEffect(() => {
+    loadOrder();
+  }, []);
+  // ─────────────────────────────────────────────────────────────────────────────────────
+
+  // ─── Added Functions to Save and Load Data [7/1/2026] ─────────────────────────────────────────────────────
+  async function saveOrder() {
+    try {
+      const order = {
+        note: note,
+        time: new Date().toLocaleTimeString(),
+      };
+
+      await AsyncStorage.setItem('orderNote', JSON.stringify(order));
+
+      setSavedOrder(order);
+      setNote('');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function loadOrder() {
+    try {
+      const value = await AsyncStorage.getItem('orderNote');
+
+      if (value != null) {
+        setSavedOrder(JSON.parse(value));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📋 Order Summary</Text>
+
+      {/* ─── Input Field ─── */}
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your order note"
+        value={note}
+        onChangeText={setNote}
+      />
+
+      {/* ─── Save Button ─── */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={saveOrder}
+      >
+        <Text style={styles.buttonText}>Save Note</Text>
+      </TouchableOpacity>
+
+      {/* ─── Data Display ─── */}
+      {savedOrder && (
+        <View style={{ marginTop: 30, alignItems: 'center' }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Saved Order</Text>
+
+          <Text>Note: {savedOrder.note}</Text>
+
+          <Text>Saved At: {savedOrder.time}</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={styles.button}
@@ -84,4 +152,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
+
+  input: {
+    width: '80%',
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#999',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  }
 });
