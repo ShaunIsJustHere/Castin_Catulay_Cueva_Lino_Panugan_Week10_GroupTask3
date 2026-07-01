@@ -2,6 +2,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationIndependentTree } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // ─── Stack Navigator Setup ───────────────────────────────────────────────────
 // This is a SECOND independent stack — separate from the one in index.tsx.
 // Each tab has its own stack, and NavigationIndependentTree keeps them isolated.
